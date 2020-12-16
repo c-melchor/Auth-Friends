@@ -1,51 +1,97 @@
 import React, { Component } from "react";
+import styled from "styled-components";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem auto;
+
+  .button {
+    width: 10%;
+  }
+`;
 
 export default class AddFriend extends Component {
-  state = {
-    id: "",
-    name: "",
-    age: "",
-    email: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      friend: {
+        name: "",
+        age: "",
+        email: "",
+        id: Math.random()
+      }
+    };
+  }
 
   onChange = e => {
-    this.setState({ ...this.state, [e.target.name]: e.target.value });
+    this.setState({
+      friend: {
+        ...this.state.friend,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
+    axiosWithAuth()
+      .post("/friends", this.state.friend)
+      .then(res => {
+        this.props.setFriends(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   render() {
     return (
       <div>
-        <form>
-          <label htmlFor="addName">
+        <StyledForm onSubmit={this.onSubmit}>
+          <label htmlFor="name">
             New Friend's Name:
+            <br />
             <input
-              id="addName"
+              id="name"
               type="text"
+              name="name"
               placeholder="name"
+              value={this.state.friend.name}
               onChange={this.onChange}
             />
           </label>
-          <label htmlFor="addAge">
-            Age:
+          <br />
+          <label htmlFor="age">
+            Age: <br />
             <input
+              name="age"
               type="text"
-              id="addAge"
+              id="age"
               placeholder="age"
+              value={this.state.friend.age}
               onChange={this.onChange}
             />
-          </label>
-          <label htmlFor="addEmail">
-            Email:
+          </label>{" "}
+          <br />
+          <label htmlFor="email">
+            Email: <br />
             <input
+              name="email"
               type="email"
-              id="addEmail"
+              id="email"
               placeholder="email"
+              value={this.state.friend.email}
               onChange={this.onChange}
             />
-          </label>
-
-          <button type="submit">Click to Add</button>
-        </form>
+          </label>{" "}
+          <br />
+          <button className="button" type="submit">
+            Click to Add
+          </button>
+        </StyledForm>
       </div>
     );
   }

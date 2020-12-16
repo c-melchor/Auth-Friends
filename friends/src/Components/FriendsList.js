@@ -13,11 +13,18 @@ export default class FriendsList extends Component {
     this.getFriends();
   }
 
+  setFriends = friends => {
+    this.setState({
+      friends: friends
+    });
+  };
+
   getFriends = () => {
     axiosWithAuth()
       .get("/friends")
       .then(res => {
-        this.setState({ friends: res.data });
+        this.setFriends(res.data);
+        // this.setState({ friends: res.data });
       })
       .catch(err => {
         console.log(err);
@@ -28,10 +35,10 @@ export default class FriendsList extends Component {
     return (
       <div>
         Don't see your friend? Add one using the form below:
-        <AddFriend />
+        <AddFriend setFriends={this.setFriends} />
         <br />
         {this.state.friends.map(homie => {
-          return <Friend homie={homie} />;
+          return <Friend homie={homie} id={homie.id} />;
         })}
       </div>
     );
